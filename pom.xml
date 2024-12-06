@@ -99,6 +99,11 @@
             <scope>test</scope>
         </dependency>
 
+        <!-- 消息通讯机制       -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-websocket</artifactId>
+        </dependency>
 
         <dependency>
             <groupId>com.github.xiaoymin</groupId>
