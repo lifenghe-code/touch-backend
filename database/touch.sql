@@ -58,6 +58,7 @@ CREATE TABLE `chat` (
                         `id` int(11) NOT NULL AUTO_INCREMENT COMMENT '唯一主键',
                         `sender_uid` int(11) NOT NULL COMMENT '对象UID',
                         `receiver_uid` int(11) NOT NULL COMMENT '用户UID',
+                        `type`         tinyint  default 0                 not null comment '0表示单聊，1表示群聊',
                         `is_delete` tinyint(4) NOT NULL DEFAULT '0' COMMENT '是否移除聊天 0否 1是',
                         `unread` int(11) NOT NULL DEFAULT '0' COMMENT '消息未读数量',
                         `create_time` datetime NOT NULL default CURRENT_TIMESTAMP COMMENT '创建时间',
@@ -77,7 +78,7 @@ DROP TABLE IF EXISTS `chat_detail`;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `chat_detail` (
                                `id` int(11) NOT NULL AUTO_INCREMENT COMMENT '唯一主键',
-                               `user_uid` int(11) NOT NULL COMMENT '消息发送者',
+                               `sender_uid` int(11) NOT NULL COMMENT '消息发送者',
                                `receiver_uid` int(11) NOT NULL COMMENT '消息接收者',
                                `content` varchar(500) NOT NULL COMMENT '消息内容',
                                `sender_del` tinyint(4) NOT NULL DEFAULT '0' COMMENT '发送者是否删除',
@@ -102,5 +103,6 @@ CREATE TABLE `friendship`
     `create_time` datetime NOT NULL default CURRENT_TIMESTAMP COMMENT '好友申请时间',
     `update_time` datetime NOT NULL default CURRENT_TIMESTAMP on update CURRENT_TIMESTAMP COMMENT '处理请求的时间',
     `is_delete`     tinyint      default 0  not null comment '是否删除',
-    PRIMARY KEY (`id`)
+    PRIMARY KEY (`id`),
+    UNIQUE KEY `id` (`sender_id`,`receiver_id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=0 DEFAULT CHARSET=utf8mb4 COMMENT='好友申请表';
