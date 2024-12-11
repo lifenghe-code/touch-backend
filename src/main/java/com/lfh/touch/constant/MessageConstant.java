@@ -10,6 +10,12 @@ public interface MessageConstant {
     // 退出信息
     String LOGOUT = "logout";
 
+    String MESSAGE = "message";
+
+    String MESSAGE_RECALL = "message_recall";
+
+
+
     // 添加好友请求
     String FRIEND_ADD_REQUEST = "friend_add_request";
 
