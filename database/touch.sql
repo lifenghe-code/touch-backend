@@ -78,6 +78,7 @@ DROP TABLE IF EXISTS `chat_detail`;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `chat_detail` (
                                `id` int(11) NOT NULL AUTO_INCREMENT COMMENT '唯一主键',
+                               `chat_id` int(11) NOT NULL COMMENT '聊天id',
                                `sender_uid` int(11) NOT NULL COMMENT '消息发送者',
                                `receiver_uid` int(11) NOT NULL COMMENT '消息接收者',
                                `content` varchar(500) NOT NULL COMMENT '消息内容',
