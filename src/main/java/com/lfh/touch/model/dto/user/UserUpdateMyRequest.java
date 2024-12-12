@@ -1,4 +1,4 @@
-package com.lfh.touch.model.dto;
+package com.lfh.touch.model.dto.user;
 
 import lombok.Data;
 

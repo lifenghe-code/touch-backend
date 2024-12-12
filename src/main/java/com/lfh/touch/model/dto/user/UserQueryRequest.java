@@ -1,4 +1,4 @@
-package com.lfh.touch.model.dto;
+package com.lfh.touch.model.dto.user;
 
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
