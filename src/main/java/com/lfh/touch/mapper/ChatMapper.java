@@ -1,7 +1,7 @@
 package com.lfh.touch.mapper;
-
 import com.lfh.touch.model.domain.Chat;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import org.apache.ibatis.annotations.Mapper;
 
 /**
 * @author li_fe
@@ -9,6 +9,7 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 * @createDate 2024-12-04 18:40:15
 * @Entity com.lfh.touch.model.domain.Chat
 */
+
 public interface ChatMapper extends BaseMapper<Chat> {
 
 }
