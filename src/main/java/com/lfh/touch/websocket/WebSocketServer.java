@@ -2,10 +2,13 @@ package com.lfh.touch.websocket;
 
 import cn.hutool.json.JSONObject;
 import cn.hutool.json.JSONUtil;
+import com.lfh.touch.constant.MessageConstant;
 import com.lfh.touch.mapper.ChatDetailMapper;
 import com.lfh.touch.model.domain.ChatDetail;
+import com.lfh.touch.model.dto.user.UserAddFriendRequest;
 import com.lfh.touch.utils.SpringContextUtils;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.relational.core.sql.In;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
@@ -13,21 +16,17 @@ import javax.websocket.*;
 import javax.websocket.server.PathParam;
 import javax.websocket.server.ServerEndpoint;
 import java.util.Map;
+import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
+
+import com.lfh.touch.websocket.MessageHandler;
 
 @Component
 @Slf4j
 @ServerEndpoint("/websocket/{uid}")
 public class WebSocketServer {
 
-//    private ChatDetailMapper chatDetailMapper;
-//    @PostConstruct
-//    void init(){
-//        log.info("--------------");
-//        this.chatDetailMapper = SpringContextUtils.getBean(ChatDetailMapper.class);
-//        log.info(this.chatDetailMapper.toString());
-//    }
 
     /**
      * 静态变量，用来记录当前在线连接数，线程安全的类。
@@ -98,21 +97,30 @@ public class WebSocketServer {
          * html界面传递来得数据格式，可以自定义.
          * {"sid":"user-1","message":"hello websocket"}
          */
-
         JSONObject jsonObject = JSONUtil.parseObj(message);
-        ChatDetail bean = JSONUtil.toBean(jsonObject, ChatDetail.class);
+        if (jsonObject.get("type").equals(MessageConstant.FRIEND_ADD_REQUEST)) {
+            UserAddFriendRequest bean = JSONUtil.toBean(jsonObject, UserAddFriendRequest.class);
+            Session toSession = onlineSessionClientMap.get(bean.getReceiverUid());
+            MessageHandler.handleFriendAddRequest(toSession, bean);
+            log.info("服务端收到客户端消息 ==> fromSid = {}, toSid = {}", bean.getSenderUid(), bean.getReceiverUid());
 
-        Integer toUid = bean.getReceiverUid();
-        String msg = bean.getContent();
-        log.info("服务端收到客户端消息 ==> fromSid = {}, toSid = {}, message = {}", uid, toUid, msg);
+        } else if(jsonObject.get("type").equals(MessageConstant.MESSAGE)){
+            ChatDetail bean = JSONUtil.toBean(jsonObject, ChatDetail.class);
+            Integer fromUid = bean.getSenderUid();
+            Integer toUid = bean.getReceiverUid();
+            String msg = bean.getContent();
+            log.info("服务端收到客户端消息 ==> fromSid = {}, toSid = {}, message = {}", fromUid, toUid, msg);
 
-        /**
-         * 模拟约定：如果未指定sid信息，则群发，否则就单独发送
-         */
-        if (toUid == null) {
-            sendToAll(msg);
-        } else {
-            sendToOne(bean);
+            /**
+             * 模拟约定：如果未指定sid信息，则群发，否则就单独发送
+             */
+            if (toUid == null) {
+                sendToAll(msg);
+            } else {
+                Session fromSession = onlineSessionClientMap.get(bean.getSenderUid());
+                Session toSession = onlineSessionClientMap.get(bean.getReceiverUid());
+                MessageHandler.sendToOne(MessageConstant.MESSAGE,fromSession, toSession, bean);
+            }
         }
     }
 
@@ -137,47 +145,10 @@ public class WebSocketServer {
         // 遍历在线map集合
         onlineSessionClientMap.forEach((onlineUid, toSession) -> {
             // 排除掉自己
-            if (uid!=onlineUid) {
+            if (!Objects.equals(uid, onlineUid)) {
                 log.info("服务端给客户端群发消息 ==> uid = {}, toUid = {}, message = {}", uid, onlineUid, message);
                 toSession.getAsyncRemote().sendText(message);
             }
         });
     }
-
-
-
-    /**
-     * 指定发送消息
-     * @param chatDetail
-     */
-    public void sendToOne(ChatDetail chatDetail) {
-        // 通过sid查询map中是否存在
-        Session fromSession = onlineSessionClientMap.get(chatDetail.getSenderUid());
-        Session toSession = onlineSessionClientMap.get(chatDetail.getReceiverUid());
-        Integer toUid = chatDetail.getReceiverUid();
-        String message = chatDetail.getContent();
-        if (toSession == null) {
-            log.error("服务端给客户端发送消息 ==> toSid = {} 不存在, message = {}", toUid, message);
-            return;
-        }
-        // 异步发送
-        ChatDetailMapper chatDetailMapper = SpringContextUtils.getBean(ChatDetailMapper.class);
-        log.info("--------------",chatDetailMapper.toString());
-        int insert = chatDetailMapper.insert(chatDetail);
-        chatDetail.setId(insert);
-        log.info("服务端给客户端发送消息 ==> toSid = {}, message = {}", toUid, message);
-        String jsonString = JSONUtil.toJsonStr(chatDetail);
-        toSession.getAsyncRemote().sendText(jsonString);
-        fromSession.getAsyncRemote().sendText(jsonString);
-        /*
-        // 同步发送
-        try {
-            toSession.getBasicRemote().sendText(message);
-        } catch (IOException e) {
-            log.error("发送消息失败，WebSocket IO异常");
-            e.printStackTrace();
-        }*/
-    }
-
-
 }
