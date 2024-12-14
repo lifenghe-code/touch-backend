@@ -28,7 +28,7 @@ public interface MessageConstant {
     // 消息回复
     String FRIEND_RESPONSE = "friend_response";
 
-
+    String FRIEND_ADD = "请求添加您为好友！";
 
 
 }
