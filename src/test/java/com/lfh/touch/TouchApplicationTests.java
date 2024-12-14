@@ -14,7 +14,11 @@ class TouchApplicationTests {
         // 启动服务器
         new Thread(() -> {
             NettyServer server = new NettyServer();
-            server.start();
+            try {
+                server.start();
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
         }).start();
 
         // 启动客户端
