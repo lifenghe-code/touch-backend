@@ -2,8 +2,10 @@ package com.lfh.touch.model.dto.user;
 
 import lombok.Data;
 
+import java.io.Serializable;
+
 @Data
-public class UserUpdateMyRequest {
+public class UserUpdateMyRequest implements Serializable {
     /**
      * id
      */
