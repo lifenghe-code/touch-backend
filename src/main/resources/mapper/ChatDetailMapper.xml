@@ -6,7 +6,7 @@
 
     <resultMap id="BaseResultMap" type="com.lfh.touch.model.domain.ChatDetail">
             <id property="id" column="id" jdbcType="INTEGER"/>
-            <result property="userUid" column="user_uid" jdbcType="INTEGER"/>
+            <result property="senderUid" column="sender_uid" jdbcType="INTEGER"/>
             <result property="receiverUid" column="receiver_uid" jdbcType="INTEGER"/>
             <result property="content" column="content" jdbcType="VARCHAR"/>
             <result property="senderDel" column="sender_del" jdbcType="TINYINT"/>
@@ -14,11 +14,13 @@
             <result property="withdraw" column="withdraw" jdbcType="TINYINT"/>
             <result property="isDelete" column="is_delete" jdbcType="TINYINT"/>
             <result property="createTime" column="create_time" jdbcType="TIMESTAMP"/>
+            <result property="chatId" column="chat_id" jdbcType="INTEGER"/>
     </resultMap>
 
     <sql id="Base_Column_List">
-        id,user_uid,receiver_uid,
+        id,sender_uid,receiver_uid,
         content,sender_del,receiver_del,
-        withdraw,is_delete,create_time
+        withdraw,is_delete,create_time,
+        chat_id
     </sql>
 </mapper>

@@ -12,11 +12,12 @@
             <result property="unread" column="unread" jdbcType="INTEGER"/>
             <result property="createTime" column="create_time" jdbcType="TIMESTAMP"/>
             <result property="updateTime" column="update_time" jdbcType="TIMESTAMP"/>
+            <result property="type" column="type" jdbcType="TINYINT"/>
     </resultMap>
 
     <sql id="Base_Column_List">
         id,sender_uid,receiver_uid,
         is_delete,unread,create_time,
-        update_time
+        update_time,type
     </sql>
 </mapper>
